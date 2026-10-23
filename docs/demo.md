@@ -4,7 +4,7 @@ Run `pnpm install`, then `pnpm --filter @workspace/loqelo run dev`.
 Open http://localhost:5173.
 
 Build the static demo with `pnpm --filter @workspace/loqelo run build`.
-Publish the contents of `artifacts/loqelo/dist/public` to any static host.
+Publish the contents of `artifacts/loqelo/dist` to any static host.
 
 The demo uses the supplied Loqelo branding, product screenshots and promotional video. English, Polish and Arabic are available, including right-to-left Arabic layout. Initial language follows the browser preference.
 

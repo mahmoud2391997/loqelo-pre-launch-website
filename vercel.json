@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "vite",
+  "framework": null,
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/loqelo build",
-  "outputDirectory": "artifacts/loqelo/dist/public",
+  "outputDirectory": "artifacts/loqelo/dist",
   "rewrites": [
     {
       "source": "/(.*)",
