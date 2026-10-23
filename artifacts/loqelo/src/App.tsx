@@ -1,16 +1,17 @@
+import { RequestHero, ProductDemo, ServicePhotos } from '@/components/product-demo';
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-import { useGetDetectedLocale, useRecordAnalyticsEvent, useSubmitWaitlistSignup } from '@workspace/api-client-react';
+import { useGetDetectedLocale, useRecordAnalyticsEvent, useSubmitWaitlistSignup } from '@/lib/demo';
 import type { WaitlistSignupInput } from '@workspace/api-client-react';
 import { getAlpha2Codes, getNames, registerLocale } from 'i18n-iso-countries';
 import enCountries from 'i18n-iso-countries/langs/en.json';
 import plCountries from 'i18n-iso-countries/langs/pl.json';
 import arCountries from 'i18n-iso-countries/langs/ar.json';
-import { ArrowDownRight, ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import {
   Route,
   Switch,
@@ -118,25 +119,9 @@ function Home() {
         </div>
       </header>
       <main id="top">
-        <section className="hero">
-          <div className="wrap hero-grid">
-            <div className="hero-copy-block">
-              <div className="eyebrow">{t.heroEyebrow}</div>
-              <h1>{t.heroLine1}<br /><em>{t.heroLine2}</em></h1>
-              <p className="hero-copy">{t.heroBody}</p>
-              <div className="hero-ctas">
-                <a href="#join-customer" className="btn">{t.customerCta}<ArrowRight size={15} /></a>
-                <a href="#join-provider" className="btn outline">{t.providerCta}<ArrowDownRight size={15} /></a>
-              </div>
-              <div className="launch-line"><span className="launch-dot" />{t.launch}<strong>February 2027</strong></div>
-            </div>
-            <div className="hero-visual">
-              <span className="hero-index">LOQELO / 2027</span>
-              <div className="hero-photo"><img src="/assets/home-services.jpg" alt="Home service professionals at work" width="1400" height="2100" fetchPriority="high" /></div>
-              <div className="floating-note"><small>{t.heroNote}</small><strong>{t.heroNoteTitle}</strong><span>{t.heroNoteSub}</span></div>
-            </div>
-          </div>
-        </section>
+        <RequestHero locale={locale} />
+        <ProductDemo />
+        <ServicePhotos />
         <section className="video-row" id="film">
           <div className="wrap">
             <div className="section-head">
@@ -145,24 +130,10 @@ function Home() {
             </div>
             <div className="video-frame">
               <video controls playsInline preload="none" poster="/assets/home-services.jpg" aria-label="Loqelo promo film">
-                <source src="/api/storage/public-objects/loqelo/promo-v1.mp4" type="video/mp4" />
+                <source src="/assets/loqelo-promo.mp4" type="video/mp4" />
                 {t.videoFallback}
               </video>
               <div className="video-caption">{t.filmCaption}</div>
-            </div>
-          </div>
-        </section>
-        <section className="product-section" id="product">
-          <div className="wrap">
-            <div className="section-head">
-              <div><div className="eyebrow">{t.productLabel}</div><h2>{t.productTitle}</h2></div>
-              <p>{t.productBody}</p>
-            </div>
-            <div className="product-grid">
-              <div className="product-card main"><div className="product-label"><span>{t.productHome}</span><strong>01 / 04</strong></div><img src="/assets/platform-home.webp" alt="Loqelo marketplace homepage interface" width="1440" height="3054" loading="lazy" /></div>
-              <div className="product-card quote"><div className="product-label"><span>{t.productQuotes}</span><strong>02 / 04</strong></div><img src="/assets/customer-quotes.webp" alt="Customer comparing service quotes in Loqelo" width="1440" height="1804" loading="lazy" /></div>
-              <div className="product-card mobile"><div className="product-label"><span>{t.productMobile}</span><strong>03 / 04</strong></div><img src="/assets/mobile-home.webp" alt="Loqelo mobile service request experience" width="390" height="844" loading="lazy" /></div>
-              <div className="product-card bid"><div className="product-label"><span>{t.productBid}</span><strong>04 / 04</strong></div><img src="/assets/provider-bid.webp" alt="A service professional preparing an offer in Loqelo" width="1440" height="1781" loading="lazy" /></div>
             </div>
           </div>
         </section>
@@ -181,7 +152,7 @@ function Home() {
         </section>
         <section className="matching">
           <div className="wrap matching-grid">
-            <div className="match-art"><img src="/assets/provider-dashboard.webp" alt="Provider dashboard showing nearby matched jobs" width="1440" height="1024" loading="lazy" /><div className="match-sticker">{t.matchSticker}</div></div>
+            <div className="match-art"><img src="/assets/reference/06 Photos/hedge.jpg" alt="Professional carefully trimming a garden hedge" width="1000" height="700" loading="lazy" /><div className="match-sticker">{t.matchSticker}</div></div>
             <div>
               <div className="eyebrow">{t.matchLabel}</div><h2>{t.matchTitle}</h2><p>{t.matchBody}</p>
               <ul className="match-list">{t.matchPoints.map((point, i) => <li key={point}><span>0{i + 1}</span>{point}</li>)}</ul>
@@ -204,7 +175,7 @@ function Home() {
         <small>© 2026 Loqelo · {t.footerNote}</small>
       </div></footer>
       {(!analyticsChoice || showAnalytics) && <aside className="cookie-banner" aria-label="Analytics preferences">
-        <strong>{t.cookieTitle}</strong><p>{t.cookieBody}</p>
+        <strong>{t.cookieTitle}</strong><p>{locale === 'ar' ? 'لا يرسل هذا العرض أي تحليلات. يتم تذكر اللغة وخيارات الخصوصية في هذا المتصفح فقط.' : locale === 'pl' ? 'Demo nie wysyła analityki. Język i prywatność są zapamiętywane tylko w tej przeglądarce.' : 'This demo sends no analytics. Language and privacy preferences are remembered only in this browser.'}</p>
         <div className="cookie-actions"><button className="accept" onClick={() => setConsent(true)} data-testid="button-analytics-accept">{t.allowAnalytics}</button><button onClick={() => setConsent(false)} data-testid="button-analytics-reject">{t.essentialOnly}</button></div>
       </aside>}
     </div>
@@ -243,7 +214,7 @@ function WaitlistForm({ audience, locale, countryCode, countries, onCountryChang
   };
   return <form className={`form-card ${audience}`} id={audience === 'customer' ? 'join-customer' : 'join-provider'} onSubmit={submit}>
     <div className="form-kicker">{audience === 'customer' ? text.forCustomers : text.forProviders}</div>
-    <h3>{title}</h3><p>{description}</p>
+    <h3>{title}</h3><p>{description}</p><p className="demo-note">{locale === 'ar' ? 'عرض تجريبي — لا يتم إرسال البيانات أو حفظها.' : locale === 'pl' ? 'Demo — dane nie są wysyłane ani zapisywane.' : 'Demo only — details are not sent or saved.'}</p>
     <div className="field"><label htmlFor={`${audience}-email`}>{text.emailLabel}</label><input id={`${audience}-email`} type="email" autoComplete="email" required maxLength={254} placeholder={text.emailPlaceholder} value={email} onChange={(e) => setEmail(e.target.value)} data-testid={`input-${audience}-email`} /></div>
     <div className="form-row">
       <div className="field"><label htmlFor={`${audience}-country`}>{text.countryLabel}</label><select id={`${audience}-country`} required value={countryCode} onChange={(e) => onCountryChange(e.target.value)} data-testid={`select-${audience}-country`}><option value="" disabled>{text.countryPlaceholder}</option>{countries.map(([code, name]) => <option key={code} value={code}>{name}</option>)}</select></div>
@@ -253,7 +224,7 @@ function WaitlistForm({ audience, locale, countryCode, countries, onCountryChang
     <label className="consent"><input type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)} data-testid={`checkbox-${audience}-consent`} /><span>{text.consent}</span></label>
     <button type="submit" className="btn form-submit" disabled={signup.isPending} data-testid={`button-submit-${audience}`}>{signup.isPending ? text.submitting : audience === 'customer' ? text.customerSubmit : text.providerSubmit}{!signup.isPending && <ArrowRight size={15} />}</button>
     {status && <div className={`form-status ${status === 'error' ? 'error' : ''}`} role="status" data-testid={`status-${audience}-signup`}>
-      {status === 'joined' ? <><Check size={15} /> {text.success}</> : status === 'already_joined' ? text.already : text.error}
+      {status === 'joined' ? <><Check size={15} /> {locale === 'ar' ? 'نجحت التجربة! لم يتم التسجيل الفعلي.' : locale === 'pl' ? 'Gotowe! To demonstracja, bez prawdziwego zapisu.' : 'Demo complete! No real waitlist registration was made.'}</> : status === 'already_joined' ? text.already : text.error}
     </div>}
   </form>;
 }
