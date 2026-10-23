@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Loqelo Pre-launch Website"
+description = "A responsive pre-launch website for Loqelo that explains the home, garden, and office services marketplace, presents the provided product visuals and promo video, and collects consent-based customer and provider waitlist sign-ups."
+version = "1.0.0"
+id = "artifacts/loqelo"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23711
+
+[services.development]
+run = "pnpm --filter @workspace/loqelo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/loqelo", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/loqelo/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23711"
+BASE_PATH = "/"

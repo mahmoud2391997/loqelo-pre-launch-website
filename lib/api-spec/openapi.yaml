@@ -10,6 +10,10 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: waitlist
+    description: Loqelo pre-launch sign-ups
+  - name: analytics
+    description: Consent-based, privacy-safe aggregate analytics
 paths:
   /healthz:
     get:
@@ -24,6 +28,68 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /locale:
+    get:
+      operationId: getDetectedLocale
+      tags: [waitlist]
+      summary: Detect a suggested site language and country
+      description: Returns a country and language hint from trusted proxy headers, without storing an IP address.
+      responses:
+        "200":
+          description: Suggested locale
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectedLocale"
+  /waitlist:
+    post:
+      operationId: submitWaitlistSignup
+      tags: [waitlist]
+      summary: Add a customer or service provider to the waitlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaitlistSignupInput"
+      responses:
+        "201":
+          description: New sign-up accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WaitlistSignupResult"
+        "200":
+          description: Address was already on this audience's list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WaitlistSignupResult"
+        "400":
+          description: Invalid sign-up data
+        "429":
+          description: Too many sign-up attempts
+  /analytics/events:
+    post:
+      operationId: recordAnalyticsEvent
+      tags: [analytics]
+      summary: Record an event after analytics consent
+      description: Accepts anonymous page-view and completed-sign-up events only. Never accepts email addresses or form content.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyticsEventInput"
+      responses:
+        "202":
+          description: Event accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsEventReceipt"
+        "400":
+          description: Invalid event data
 components:
   schemas:
     HealthStatus:
@@ -33,4 +99,72 @@ components:
           type: string
       required:
         - status
+    DetectedLocale:
+      type: object
+      properties:
+        locale:
+          type: string
+          enum: [en, pl, ar]
+        countryCode:
+          type: [string, "null"]
+          pattern: "^[A-Z]{2}$"
+      required: [locale, countryCode]
+    WaitlistSignupInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        audience:
+          type: string
+          enum: [customer, provider]
+        countryCode:
+          type: string
+          pattern: "^[A-Z]{2}$"
+        accountType:
+          type: string
+          enum: [individual, business]
+        locale:
+          type: string
+          enum: [en, pl, ar]
+        consent:
+          type: boolean
+          enum: [true]
+        website:
+          type: string
+          maxLength: 200
+      required: [email, audience, countryCode, locale, consent]
+    WaitlistSignupResult:
+      type: object
+      properties:
+        result:
+          type: string
+          enum: [joined, already_joined]
+      required: [result]
+    AnalyticsEventInput:
+      type: object
+      properties:
+        anonymousId:
+          type: string
+          format: uuid
+        eventType:
+          type: string
+          enum: [page_view, waitlist_signup]
+        countryCode:
+          type: [string, "null"]
+          pattern: "^[A-Z]{2}$"
+        locale:
+          type: string
+          enum: [en, pl, ar]
+        audience:
+          type: [string, "null"]
+          enum: [customer, provider, null]
+      required: [anonymousId, eventType, locale]
+    AnalyticsEventReceipt:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+      required: [accepted]
 

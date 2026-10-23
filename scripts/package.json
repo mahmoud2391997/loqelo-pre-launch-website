@@ -5,10 +5,15 @@
   "type": "module",
   "scripts": {
     "hello": "tsx ./src/hello.ts",
+    "export:waitlist": "node ./src/export-waitlist.mjs",
+    "export:analytics": "node ./src/export-analytics.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "tsx": "catalog:"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
   }
 }
